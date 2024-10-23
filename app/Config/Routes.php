@@ -16,6 +16,12 @@ $routes->group('/', function ($routes) {
     $routes->get('personal-chats', 'Home::getPersonalChats');
     $routes->get('archived-chats', 'Home::getArchivedChats');
     $routes->get('chat-msgs', 'Home::getChatMsgs');
+    $routes->get('start-chat', 'Home::startChat');
+    $routes->post('send-msg', 'Home::sendMsg');
+    $routes->get('close-chat', 'Home::closeChat');
+    $routes->get('reopen-chat', 'Home::reopenChat');
+    $routes->post('send-img', 'Home::sendImg');
+
 });
 
 

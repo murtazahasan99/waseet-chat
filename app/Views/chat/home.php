@@ -24,14 +24,14 @@
                 </div>
                 <div class="part">
                     <div class="call-ul">
-                        <div class="message-li" v-for="(archive,index) in archives" :key="archive.id">
+                        <div class="message-li" v-for="(archive,index) in archives" :key="archive.id" @click="openChat(archive.id,archive.merchant_id,archive.merchant_username,archive.merchant_name,archive.ms_id,archive.is_closed,archive.is_rated)">
                             <div class="img-icon">
                                 <img src="<?php echo base_url(); ?>assets/img/icon/person.svg" alt="">
                             </div>
                             <div class="name">
                                 <div class="main">{{ archive.merchant_name }} ({{archive.merchant_username}})</div>
                                 <div class="sup">
-                                    <span>{{ archive.last_reply.length > 10 ? archive.last_reply.substr(0, 15) + '...' : archive.last_reply }}</span>
+                                    <span>{{ archive.last_reply_type == 3 ? 'صورة' : (archive.last_reply.length > 10 ? archive.last_reply.substr(0, 15) + '...' : archive.last_reply) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -77,9 +77,10 @@
                                     <span class="opacity">رمز الدخول</span>
                                     <span class="info">*********</span>
                                 </div>
-                                <div class="re-write">
-                                    <img src="<?php echo base_url(); ?>assets/img/icon/pen.svg" alt="">
-                                </div>
+                                <!-- <div class="re-write">
+                                    <img src="<?php //echo base_url(); 
+                                                ?>assets/img/icon/pen.svg" alt="">
+                                </div> -->
                             </div>
                         </div>
                         <div class="under">
@@ -133,19 +134,19 @@
                         </div>
                         <div class="messages-list">
 
-                            <div class="message-li" v-for="(chat,index) in general_chats" :key="chat.id">
+                            <div class="message-li" v-for="(chat,index) in general_chats" :key="chat.id" @click="openChat(chat.id,chat.merchant_id,chat.merchant_username,chat.merchant_name,chat.ms_id,chat.is_closed,chat.is_rated)">
                                 <div class="img-icon">
                                     <img src="<?php echo base_url(); ?>assets/img/icon/person.svg" alt="">
                                     <div class="red-dot"></div>
                                 </div>
                                 <div class="name">
                                     <div class="main">{{ chat.merchant_name }} ({{chat.merchant_username}})</div>
-                                    <div class="sup">{{ chat.last_reply.length > 10 ? chat.last_reply.substr(0, 15) + '...' : chat.last_reply }}</div>
+                                    <div class="sup">{{ chat.last_reply_type == 3 ? 'صورة' : (chat.last_reply.length > 10 ? chat.last_reply.substr(0, 15) + '...' : chat.last_reply) }}</div>
                                 </div>
                                 <div class="time">{{ chat.updated_at }}</div>
                                 <div class="notifcation">
                                     <div class="num">
-                                        <div class="t"></div>
+                                        <div class="t">{{chat.last_reply_from == 'merchant' ? 1 : ''}}</div>
                                         <img src="<?php echo base_url(); ?>assets/img/icon/play.svg" alt="">
                                     </div>
                                 </div>
@@ -159,19 +160,19 @@
                             <span> الرسائل المخصصة </span>
                         </div>
                         <div class="messages-list">
-                            <div class="message-li" v-for="(chat,index) in personal_chats" :key="chat.id">
+                            <div class="message-li" v-for="(chat,index) in personal_chats" :key="chat.id" @click="openChat(chat.id,chat.merchant_id,chat.merchant_username,chat.merchant_name,chat.ms_id,chat.is_closed,chat.is_rated)">
                                 <div class="img-icon">
                                     <img src="<?php echo base_url(); ?>assets/img/icon/person.svg" alt="">
                                     <div class="red-dot"></div>
                                 </div>
                                 <div class="name">
                                     <div class="main">{{ chat.merchant_name }} ({{chat.merchant_username}})</div>
-                                    <div class="sup">{{ chat.last_reply.length > 10 ? chat.last_reply.substr(0, 15) + '...' : chat.last_reply }}</div>
+                                    <div class="sup">{{ chat.last_reply_type == 3 ? 'صورة' : (chat.last_reply.length > 10 ? chat.last_reply.substr(0, 15) + '...' : chat.last_reply) }}</div>
                                 </div>
                                 <div class="time">{{ chat.updated_at }}</div>
                                 <div class="notifcation">
                                     <div class="num">
-                                        <div class="t">0</div>
+                                        <div class="t">{{chat.last_reply_from == 'merchant' ? 1 : ''}}</div>
                                         <img src="<?php echo base_url(); ?>assets/img/icon/play.svg" alt="">
                                     </div>
                                 </div>
@@ -202,8 +203,8 @@
                                 <img src="<?php echo base_url(); ?>assets/img/icon/person.svg" alt="">
                             </div>
                             <div class="user-name">
-                                <div class="name">احمد محمد حميد</div>
-                                <div class="user-id">#CU6798H</div>
+                                <div class="name">{{ merchant_name }} ({{merchant_username}})</div>
+                                <div class="user-id">#{{ chat_id }}</div>
                             </div>
                         </div>
                         <div class="icon-part">
@@ -215,24 +216,59 @@
                         </div>
 
                     </div>
-                    <div class="note-box-btns" v-if="chat_id > 0">
+                    <div class="note-box-btns" v-if="chat_id > 0 && ms_id == 0">
                         <div class="close-note" id="close-note">
                             <img src="<?php echo base_url(); ?>assets/img/icon/close.svg" alt="">
                         </div>
                         <div class="note">هل تريد الانظمام الى المحادثة</div>
                         <div class="btns">
-                            <div class="btn">انظم الى المحادثة</div>
-                            <div class="btn">حذف المحادثة</div>
+                            <button class="btn" @click="startChat()">انظم الى المحادثة</button>
+                            <button class="btn" @click="exitChat()">الخروج من المحادثة</button>
                         </div>
                     </div>
-                    <div class="footer" v-if="chat_id > 0">
+
+                    <div class="note-box-btns" v-if="chat_id > 0 && ms_id != 0 && is_closed == 1 && is_rated == 0">
+                       
+                        <div class="note">تم اغلاق هذه المحادثة من قبلك وفي انتضار تقييم العميل</div>
+                        <div class="btns">
+                            <button class="btn" @click="reopenChat()">اعادة فتح المحادثة</button>
+                            <button class="btn" @click="exitChat()">الخروج من المحادثة</button>
+                        </div>
+                    </div>
+                    <div class="footer" v-if="chat_id > 0 && ms_id != 0  && is_closed == 0">
                         <div class="border">
                             <div class="input-message">
-                                <input type="text" placeholder="ادخل نص الرسالة ...">
+                                <input type="text" name="msg" id="msg" placeholder="ادخل نص الرسالة ..." v-model="msg" @keydown.enter="sendMsg()">
                             </div>
                             <div class="input-icons">
-                                <div class="in-ic">
+                                <button class="in-ic" @click="sendMsg()">
                                     <img src="<?php echo base_url(); ?>assets/img/icon/rectangle.svg" alt="">
+                                </button>
+                                <div class="in-ic" id="upload">
+                                    <img src="<?php echo base_url(); ?>assets/img/icon/clip-icon.svg" alt="">
+                                </div>
+                            </div>
+                            <div class="uplad-img" id="uplad-img">
+                                <div class="icon-line">
+                                    <div class="icon-tap">
+                                        <img src="<?php echo base_url(); ?>assets/img/icon/galory.svg" alt="">
+                                        <input type="file" name="image_to_upload" id="image_to_upload" @change="sendImg()"/>
+                                    </div>
+                                    <!-- <div class="icon-tap">
+                                        <img src="<?php //echo base_url(); ?>assets/img/icon/camera-photo.svg" alt="">
+                                        <input type="file" />
+                                    </div>
+                                    <div class="icon-tap">
+                                        <img src="<?php //echo base_url(); ?>assets/img/icon/location-icon.svg" alt="">
+                                        <input type="file" />
+                                    </div>
+                                    <div class="icon-tap">
+                                        <img src="<?php //echo base_url(); ?>assets/img/icon/contact.svg" alt="">
+                                        <input type="file" />
+                                    </div> -->
+                                    <button class="icon-tap" @click="closeChat()">
+                                        <img src="<?php echo base_url(); ?>assets/img/icon/document.svg" alt="">
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -272,7 +308,7 @@
     </div>
     <input type="hidden" name="base_url" id="base_url" value="<?php echo base_url(); ?>" v-model="base_url">
     <script src="<?php echo base_url(); ?>assets/jquery.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="<?php echo base_url(); ?>assets/chat.js"></script>
     <script src="<?php echo base_url(); ?>assets/app.js"></script>
 </body>

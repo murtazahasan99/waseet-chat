@@ -80,14 +80,19 @@ const imgsrc = images.attr('src');
 
 function activeimage() {
     $('body').addClass('show-img');
-    showimg.attr('src', $(this).attr('src'));
+    $("#imageshow").attr('src', $(this).attr('src'));
 }
-images.on('click', activeimage);
+$(document).on('click', '.the-message-img', activeimage);
 
-closimg.on('click', function() {
+$(document).on('click', '#close-img-container', function() {
     $('body').removeClass('show-img');
 });
 
-$('#close-note').on('click', function() {
+$(document).on('click', '#close-note', function() {
     $('body').addClass('hide-the-note');
 });
+
+  // upload icon window
+  $(document).on('click',"#upload", function() {
+      $('#uplad-img').toggleClass('show-upload');
+  });

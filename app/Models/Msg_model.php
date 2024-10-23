@@ -18,7 +18,7 @@ class Msg_model extends Model
         $builder->join('messages_type', 'messages.reply_type = messages_type.id');
         $builder->join('chats', 'messages.chat_id = chats.id');
         $builder->where($conditions);
-        $builder->orderBy('messages.id', 'asc');
+        $builder->orderBy('messages.id', 'desc');
         $query = $builder->get();
         return $query->getResult();
     }
